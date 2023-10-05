@@ -1,6 +1,6 @@
 # ethw - Ethereum Wallet Generator
 
-This Go application is designed to generate Ethereum wallets using deterministic seeds or BIP-39 mnemonics. It offers both command-line arguments and a TOML configuration file for seed input. The application outputs wallet information including private key, public key, and Ethereum address either in plain text or JSON format.
+This Go application is designed to generate Ethereum wallets using deterministic BIP-39 mnemonics. It offers both command-line arguments and a TOML configuration file for seed input. The application outputs wallet information including private key, public key, and Ethereum address either in plain text or JSON format.
 
 **NOTE**: Use this tool mainly for developing and for testing!
 
