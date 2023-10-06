@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aldoborrero/ethw/internal/utils"
+	"github.com/aldoborrero/ethw/internal/utils/output"
 	"github.com/aldoborrero/ethw/internal/wallet"
 	"github.com/alecthomas/kong"
 )
@@ -44,14 +44,14 @@ func (cmd *walletCreateCmd) Run(ctx *kong.Context) error {
 		return fmt.Errorf("There were errors processing seeds")
 	}
 
-	var writer utils.OutputWriter
+	var writer output.WalletOutputWriter
 	if cmd.Json {
-		writer = utils.JSONDataWriter{}
+		writer = output.JSONDataWriter{}
 	} else {
-		writer = utils.TableDataWriter{}
+		writer = output.TableDataWriter{}
 	}
 
-	if err := writer.WriteWalletOutput(walletInfos); err != nil {
+	if err := writer.WriteOutput(walletInfos); err != nil {
 		return fmt.Errorf("Failed to generate output: %w", err)
 	}
 
