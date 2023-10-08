@@ -13,6 +13,7 @@ var Cli struct {
 
 	KeyStore struct {
 		Create keystoreCreateCmd `cmd:"" help:"Manage Ethereum keystores"`
+		List   keystoreListCmd   `cmd:"" help:"List all wallets from the keystore"`
 	} `cmd:"" name:"keystore" help:"Manage Ethereum KeyStores"`
 
 	Seed struct {
@@ -21,7 +22,7 @@ var Cli struct {
 
 	Log logOptions `embed:"" prefix:"log-"`
 
-	Version versionFlag `name:"version" short:"v" help:"Display the application version"`
+	Version versionCmd `cmd:"" short:"v" help:"Display the application version"`
 }
 
 type logOptions struct {

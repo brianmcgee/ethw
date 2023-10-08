@@ -21,7 +21,7 @@ func processSeeds(seeds []wallet.Seed) ([]*wallet.Wallet, []error) {
 	for i, seed := range seeds {
 		walletInfo, err := wallet.NewWallet(seed.Data, seed.Alias)
 		if err != nil {
-			errors = append(errors, fmt.Errorf("Error generating wallet for seed %d: %w", i, err))
+			errors = append(errors, fmt.Errorf("error generating wallet for seed %d: %w", i, err))
 			continue
 		}
 
@@ -41,7 +41,7 @@ func (cmd *walletCreateCmd) Run(ctx *kong.Context) error {
 		for _, err := range errs {
 			log.Printf("%v", err)
 		}
-		return fmt.Errorf("There were errors processing seeds")
+		return fmt.Errorf("there were errors processing seeds")
 	}
 
 	var writer output.WalletOutputWriter
@@ -52,7 +52,7 @@ func (cmd *walletCreateCmd) Run(ctx *kong.Context) error {
 	}
 
 	if err := writer.WriteOutput(walletInfos); err != nil {
-		return fmt.Errorf("Failed to generate output: %w", err)
+		return fmt.Errorf("failed to generate output: %w", err)
 	}
 
 	return nil

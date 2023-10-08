@@ -36,7 +36,7 @@ func (cmd *seedCreateCmd) Run() error {
 	}
 
 	if err := writer.WriteOutput(mnemonic, seed); err != nil {
-		return fmt.Errorf("Failed to generate output: %w", err)
+		return fmt.Errorf("failed to generate output: %w", err)
 	}
 
 	return nil
