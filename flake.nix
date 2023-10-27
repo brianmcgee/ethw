@@ -96,8 +96,8 @@
           ];
           commands = [
             {
-            category = "dev";
-            package = self'.packages.ethw;
+              category = "dev";
+              package = self'.packages.ethw;
             }
 
             {
