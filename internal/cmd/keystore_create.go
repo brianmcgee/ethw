@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"os"
 
 	"github.com/aldoborrero/ethw/internal/keystore"
 	"github.com/aldoborrero/ethw/internal/wallet"
@@ -10,49 +10,47 @@ import (
 )
 
 type keystoreCreateCmd struct {
-	PrivateKey   *string      `flag:"" optional:"" type:"string" help:"Private key to store in keystore" xor:"Seed"`
-	Seed         *wallet.Seed `flag:"" optional:"" type:"custom" help:"Seed to generate a private key" xor:"PrivateKey"`
-	Password     string       `flag:"" optional:"" type:"string" default:"" help:"Passphrase to encrypt the keystore"`
-	Overwrite    bool         `flag:"" optional:"" hel:"Overwrite wallet creation if exists one in the keystore"`
-	KeystorePath string       `flag:"" optional:"" type:"path" default:"./keystore" help:"Directory to save the keystore file"`
-}
-
-func (cmd *keystoreCreateCmd) Validate() error {
-	if cmd.PrivateKey != nil && cmd.Seed != nil && string(cmd.Seed.Data) != "" {
-		return fmt.Errorf("either private-key or seed must be provided")
-	}
-	if cmd.PrivateKey == nil && (cmd.Seed == nil || string(cmd.Seed.Data) == "") {
-		return fmt.Errorf("either private-key or seed must be provided")
-	}
-	return nil
+	Wallets     []wallet.WalletData `arg:"" type:"custom" help:"List of 'seed' and 'password' to generate wallets"`
+	Overwrite   bool                `flag:"" optional:"" help:"Overwrite wallet creation if exists one in the keystore"`
+	KeystoreDir string              `flag:"" optional:"" type:"path" default:"./keystore" help:"Directory to save the keystore file"`
 }
 
 func (cmd *keystoreCreateCmd) Run() error {
-	absOutputDir := kong.ExpandPath(cmd.KeystorePath)
+	absKeystoreDir := kong.ExpandPath(cmd.KeystoreDir)
 
-	log.Infof("Creating keystore at: %s", absOutputDir)
-	ks, err := keystore.Initialize(absOutputDir)
-	if err != nil {
-		log.Errorf("Failed to create keystore: %v", err)
-		return err
-	}
-
-	if cmd.Seed != nil && string(cmd.Seed.Data) != "" {
-		wallet, err := wallet.NewWallet(cmd.Seed.Data, "")
-		if err != nil {
-			log.Errorf("Failed to generate wallet from seed: %v", err)
+	if cmd.Overwrite {
+		if err := os.RemoveAll(absKeystoreDir); err != nil {
+			log.Error("Failed to remove keystore directory: ", err)
 			return err
 		}
-		cmd.PrivateKey = &wallet.PrivateKey
 	}
 
-	log.Info("Keystore created. Importing private key...")
-	if err := keystore.ImportPrivateKey(ks, *cmd.PrivateKey, cmd.Password, cmd.Overwrite); err != nil {
-		log.Errorf("Failed to import private key into keystore: %v", err)
+	ks := keystore.NewKeyStore(absKeystoreDir)
+
+	for i, walletData := range cmd.Wallets {
+		if err := cmd.createWallet(walletData, i, ks); err != nil {
+			log.Error(err.Error())
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (cmd *keystoreCreateCmd) createWallet(walletData wallet.WalletData, index int, ks *keystore.KeystoreWrapper) error {
+	seed := walletData.Seed
+	password := walletData.Password
+
+	walletInstance, err := wallet.NewWallet([]byte(seed), "")
+	if err != nil {
+		log.Errorf("Failed to generate wallet %d from seed: %v", index+1, err)
 		return err
 	}
 
-	log.Info("Private key successfully imported into keystore")
-
+	log.Infof("Creating wallet %d with address %s", index+1, walletInstance.Address)
+	if err := ks.ImportPrivateKey(walletInstance.PrivateKey, password, false); err != nil {
+		log.Errorf("Failed to import private key into keystore for wallet %d: %v", index+1, err)
+		return err
+	}
 	return nil
 }

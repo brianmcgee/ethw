@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Use Nix
+      uses: aldoborrero/use-nix-action@v2
+
+    - name: Unit tests
+      run: go test ./...
+
+    - name: Build ethw
+      run: go build -v -o bin/ethw cmd/ethw.go

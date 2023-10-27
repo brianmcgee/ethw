@@ -8,11 +8,11 @@
     packages = rec {
       ethw = pkgs.buildGoModule rec {
         pname = "ethw";
-        version = "0.2.0";
+        version = "0.3.0";
 
         src = lib.cleanSource ./.;
 
-        vendorSha256 = "sha256-Q1lW3fj0D13dZ1Ci2qiiCiFJXWb7N3IaRAA7jrIoAyY=";
+        vendorSha256 = "sha256-7+f5cAPjl/t+GfXJMLLNXmOF/uqO9NdwHkx3ktaUTg8=";
 
         ldflags = [
           "-s"
@@ -24,7 +24,7 @@
         subPackages = ["cmd/ethw.go"];
 
         meta = with lib; {
-          description = "ethw - ethereum wallet utils";
+          description = "ethw - Ethereum Wallet Generator";
           homepage = "https://github.com/aldoborrero/ethw";
           license = licenses.mit;
           mainProgram = "ethw";

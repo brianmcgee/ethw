@@ -1,5 +1,5 @@
 {
-  description = "ethereum-hd-wallet-generator";
+  description = "ethw / Ethereum Wallet Generator";
 
   nixConfig = {
     extra-substituters = [
@@ -20,7 +20,6 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     flake-root.url = "github:srid/flake-root";
-    process-compose-flake.url = "github:Platonic-Systems/process-compose-flake";
 
     # Utils
     treefmt-nix = {
@@ -60,15 +59,88 @@
         inputs.flake-parts.flakeModules.easyOverlay
         inputs.flake-root.flakeModule
         inputs.treefmt-nix.flakeModule
-
-        localInputs.checks
-        localInputs.flake-shell
-        localInputs.formatter
         localInputs.packages
       ];
+
       systems = [
         "x86_64-linux"
         "x86_64-darwin"
       ];
+
+      debug = false;
+
+      perSystem = {
+        self',
+        pkgs,
+        config,
+        ...
+      }: {
+        # shell
+        devshells.default = {
+          name = "ethw";
+          env = [
+            {
+              name = "GOROOT";
+              value = pkgs.go + "/share/go";
+            }
+            {
+              name = "LD_LIBRARY_PATH";
+              value = "$DEVSHELL_DIR/lib";
+            }
+          ];
+          packages = with pkgs; [
+            go
+            go-tools
+            delve
+            golangci-lint
+          ];
+          commands = [
+            {
+            category = "dev";
+            package = self'.packages.ethw;
+            }
+
+            {
+              category = "nix";
+              name = "fmt";
+              help = "Format the source tree";
+              command = "nix fmt";
+            }
+
+            {
+              name = "check";
+              help = "run all linters and build all packages";
+              category = "checks";
+              command = "nix flake check";
+            }
+            {
+              name = "fix";
+              help = "Remove unused nix code";
+              category = "checks";
+              command = "${pkgs.deadnix}/bin/deadnix -e $PRJ_ROOT";
+            }
+          ];
+        };
+
+        # formatter
+        treefmt.config = {
+          inherit (config.flake-root) projectRootFile;
+          flakeFormatter = true;
+          flakeCheck = true;
+          programs = {
+            alejandra.enable = true;
+            deadnix.enable = true;
+            deno.enable = true;
+            gofumpt.enable = true;
+            mdformat.enable = true;
+            shfmt.enable = true;
+          };
+          settings.formatter = {
+            deno.excludes = ["*.md"];
+          };
+        };
+
+        # checks
+      };
     };
 }

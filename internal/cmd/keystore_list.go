@@ -4,32 +4,32 @@ import (
 	"fmt"
 
 	"github.com/aldoborrero/ethw/internal/keystore"
+	"github.com/aldoborrero/ethw/internal/utils/output"
 )
 
 type keystoreListCmd struct {
-	KeystorePath string `flag:"" optional:"" type:"path" default:"./keystore" help:"Directory where the keystore is located"`
+	KeystoreDir string `flag:"" optional:"" type:"path" default:"./keystore" help:"Directory where the keystore is located"`
+	Json        bool   `optional:"" short:"j" help:"Output results in JSON format"`
 }
 
 func (cmd *keystoreListCmd) Run() error {
 	// Initialize the keystore
-	ks, err := keystore.Initialize(cmd.KeystorePath)
-	if err != nil {
-		return fmt.Errorf("failed to obtain the keystore")
-	}
+	ks := keystore.NewKeyStore(cmd.KeystoreDir)
 
-	// Fetch all accounts
+	// Fetch all accounts (if any)
 	accounts := ks.Accounts()
 
-	// Check if there are any accounts to display
-	if len(accounts) == 0 {
-		fmt.Println("No accounts found")
-		return nil
+	// Prepare output writer
+	var writer output.KeystoreOutputWriter
+	if cmd.Json {
+		writer = output.KeystoreJSONOutputWriter{}
+	} else {
+		writer = output.KeystoreTextOutputWriter{}
 	}
 
-	// Display accounts
-	fmt.Println("List of Accounts:")
-	for i, account := range accounts {
-		fmt.Printf("%d. Address: %s", i+1, account.Address.Hex())
+	// Write result
+	if err := writer.WriteListOutput(accounts); err != nil {
+		return fmt.Errorf("failed to generate output: %w", err)
 	}
 
 	return nil

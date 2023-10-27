@@ -21,16 +21,16 @@ var Cli struct {
 	} `cmd:"" help:"Manage cryptographic seeds for Ethereum wallets"`
 
 	Log logOptions `embed:"" prefix:"log-"`
-
-	Version versionCmd `cmd:"" short:"v" help:"Display the application version"`
 }
 
 type logOptions struct {
-	Level string `enum:"debug,info,warn,error,fatal" env:"LOG_LEVEL" default:"info" help:"Configure logging level"`
+	Level  string `enum:"debug,info,warn,error,fatal" env:"LOG_LEVEL" default:"fatal" help:"Configure logging level"`
+	Format string `enum:"text,json,logfmt" env:"LOG_FORMAT" default:"text" help:"Configure logging format"`
 }
 
 func (l *logOptions) ConfigureLog() {
 	log.SetLevel(log.ParseLevel(l.Level))
 	log.SetReportTimestamp(true)
 	log.SetTimeFormat(time.RFC3339)
+	log.SetFormatter(log.LogfmtFormatter)
 }
