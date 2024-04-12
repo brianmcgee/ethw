@@ -11,7 +11,6 @@ import (
 
 type walletCreateCmd struct {
 	Seed []wallet.SeedData `arg:"" type:"custom" help:"Deterministic seeds or BIP-39 mnemonics to generate keys"`
-	Json bool              `optional:"" short:"j" help:"Output results in JSON format"`
 }
 
 func (cmd *walletCreateCmd) Run(ctx *kong.Context) error {
@@ -24,10 +23,15 @@ func (cmd *walletCreateCmd) Run(ctx *kong.Context) error {
 	}
 
 	var writer output.WalletOutputWriter
-	if cmd.Json {
+	switch Cli.OutputFormat {
+	case "json":
 		writer = output.WalletJSONOutputWriter{}
-	} else {
-		writer = output.TableOutputWriter{}
+	case "csv":
+		writer = output.WalletCSVOutputWriter{}
+	case "table":
+		writer = output.WalletTableOutputWriter{}
+	default:
+		writer = output.WalletTextOuputWriter{}
 	}
 
 	if err := writer.WriteCreateOutput(walletInfos); err != nil {

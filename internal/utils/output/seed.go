@@ -1,6 +1,7 @@
 package output
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -13,10 +14,22 @@ type SeedOutputWriter interface {
 	WriteOutput(mnemonics []string, seeds [][]byte) error
 }
 
+// SeedTextOutputWriter writes seed output in text format.
 type SeedTextOutputWriter struct{}
 
 func (s SeedTextOutputWriter) WriteOutput(mnemonics []string, seeds [][]byte) error {
-	// Implement your text output logic here for multiple seeds
+	if len(mnemonics) == 0 {
+		fmt.Println("No mnemonics found.")
+		return nil
+	}
+
+	fmt.Println("Mnemonic and Seed Information:")
+	for i, mnemonic := range mnemonics {
+		fmt.Printf("Entry #%d\n", i+1)
+		fmt.Printf("Mnemonic: %s\n", mnemonic)
+		fmt.Printf("Seed: %x\n\n", seeds[i])
+	}
+
 	return nil
 }
 
@@ -55,5 +68,30 @@ func (s SeedJSONOutputWriter) WriteOutput(mnemonics []string, seeds [][]byte) er
 	}
 
 	fmt.Println(string(jsonOutput))
+	return nil
+}
+
+// SeedCSVOutputWriter writes seed output in CSV format.
+type SeedCSVOutputWriter struct{}
+
+func (s SeedCSVOutputWriter) WriteOutput(mnemonics []string, seeds [][]byte) error {
+	csvWriter := csv.NewWriter(os.Stdout)
+	defer csvWriter.Flush()
+
+	// Write the CSV header
+	if err := csvWriter.Write([]string{"#", "Mnemonic", "Seed"}); err != nil {
+		return fmt.Errorf("writing CSV header: %w", err)
+	}
+
+	for i, mnemonic := range mnemonics {
+		seedHex := fmt.Sprintf("%x", seeds[i])
+		record := []string{fmt.Sprintf("%d", i+1), mnemonic, seedHex}
+
+		// Write each record
+		if err := csvWriter.Write(record); err != nil {
+			return fmt.Errorf("writing CSV record: %w", err)
+		}
+	}
+
 	return nil
 }

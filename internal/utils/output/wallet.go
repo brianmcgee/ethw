@@ -1,6 +1,7 @@
 package output
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -16,22 +17,36 @@ type WalletOutputWriter interface {
 
 type WalletTextOuputWriter struct{}
 
-func (w WalletTextOuputWriter) WriteCreateOutput([]*wallet.Wallet) error {
+// WriteCreateOutput writes the details of the wallets in a clear, readable, text format.
+func (w WalletTextOuputWriter) WriteCreateOutput(wallets []*wallet.Wallet) error {
+	if len(wallets) == 0 {
+		fmt.Println("No wallets found")
+		return nil
+	}
+
+	fmt.Println("Wallet Information:")
+	for i, walletInfo := range wallets {
+		fmt.Printf("Entry #%d:\n", i+1)
+		fmt.Printf("Alias: %s\n", walletInfo.Alias)
+		fmt.Printf("Address: %s\n", walletInfo.Address)
+		fmt.Printf("Private Key: %s\n", walletInfo.PrivateKey)
+		fmt.Printf("Public Key: %s\n\n", walletInfo.PublicKey)
+	}
+
 	return nil
 }
 
-// TableOutputWriter is a type that implements the OutputWriter interface for table-formatted data.
-type TableOutputWriter struct{}
+// WalletTableOutputWriter is a type that implements the OutputWriter interface for table-formatted data.
+type WalletTableOutputWriter struct{}
 
 // WriteCreateOutput writes the details of the wallets to standard output in table format.
 // Returns nil as it does not encounter any errors in the process.
-func (t TableOutputWriter) WriteCreateOutput(walletInfos []*wallet.Wallet) error {
+func (t WalletTableOutputWriter) WriteCreateOutput(walletInfos []*wallet.Wallet) error {
 	tw := table.NewWriter()
 	tw.SetOutputMirror(os.Stdout)
 	tw.AppendHeader(table.Row{"#", "Alias", "Address", "Private Key", "Public Key"})
 	for i, walletInfo := range walletInfos {
-		alias := walletInfo.Alias
-		tw.AppendRow([]interface{}{i + 1, alias, walletInfo.Address, walletInfo.PrivateKey, walletInfo.PublicKey})
+		tw.AppendRow([]interface{}{i + 1, walletInfo.Alias, walletInfo.Address, walletInfo.PrivateKey, walletInfo.PublicKey})
 	}
 	tw.Render()
 	return nil
@@ -48,5 +63,34 @@ func (j WalletJSONOutputWriter) WriteCreateOutput(walletInfos []*wallet.Wallet) 
 		return err
 	}
 	fmt.Println(string(jsonOutput))
+	return nil
+}
+
+// WalletCSVOutputWriter writes wallet information in CSV format.
+type WalletCSVOutputWriter struct{}
+
+// WriteCreateOutput writes the details of the wallets in CSV format to standard output.
+func (w WalletCSVOutputWriter) WriteCreateOutput(wallets []*wallet.Wallet) error {
+	csvWriter := csv.NewWriter(os.Stdout)
+	defer csvWriter.Flush()
+
+	header := []string{"#", "Alias", "Address", "Private Key", "Public Key"}
+	if err := csvWriter.Write(header); err != nil {
+		return fmt.Errorf("writing CSV header: %w", err)
+	}
+
+	for i, walletInfo := range wallets {
+		record := []string{
+			fmt.Sprintf("%d", i+1),
+			walletInfo.Alias,
+			walletInfo.Address,
+			walletInfo.PrivateKey,
+			walletInfo.PublicKey,
+		}
+		if err := csvWriter.Write(record); err != nil {
+			return fmt.Errorf("writing CSV record for wallet #%d: %w", i+1, err)
+		}
+	}
+
 	return nil
 }

@@ -16,7 +16,6 @@ const (
 type seedCreateCmd struct {
 	SeedPassword string `flag:"" optional:"" default:"" short:"p" help:"Password for the seed"`
 	Length       string `flag:"" optional:"" default:"12" short:"m" enum:"12,24" help:"Number of words in the mnemonic. Can be 12 or 24."`
-	Json         bool   `optional:"" short:"j" help:"Output results in JSON format"`
 	NumSeeds     int    `flag:"" optional:"" default:"1" short:"n" help:"Number of seeds to generate"`
 }
 
@@ -58,10 +57,15 @@ func (c *seedCreateCmd) Run(ctx *kong.Context) error {
 	}
 
 	var writer output.SeedOutputWriter
-	if c.Json {
+	switch Cli.OutputFormat {
+	case "json":
 		writer = output.SeedJSONOutputWriter{}
-	} else {
+	case "csv":
+		writer = output.SeedCSVOutputWriter{}
+	case "table":
 		writer = output.SeedTableOutputWriter{}
+	default:
+		writer = output.SeedTextOutputWriter{}
 	}
 
 	if err := writer.WriteOutput(mnemonics, seeds); err != nil {

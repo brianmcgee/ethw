@@ -9,7 +9,6 @@ import (
 
 type keystoreListCmd struct {
 	KeystoreDir string `flag:"" optional:"" type:"path" default:"./keystore" help:"Directory where the keystore is located"`
-	Json        bool   `optional:"" short:"j" help:"Output results in JSON format"`
 }
 
 func (cmd *keystoreListCmd) Run() error {
@@ -21,9 +20,14 @@ func (cmd *keystoreListCmd) Run() error {
 
 	// Prepare output writer
 	var writer output.KeystoreOutputWriter
-	if cmd.Json {
+	switch Cli.OutputFormat {
+	case "json":
 		writer = output.KeystoreJSONOutputWriter{}
-	} else {
+	case "csv":
+		writer = output.KeystoreCSVOutputWriter{}
+	case "table":
+		writer = output.KeystoreTableOutputWriter{}
+	default:
 		writer = output.KeystoreTextOutputWriter{}
 	}
 

@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/aldoborrero/ethw/internal/keystore"
+	"github.com/aldoborrero/ethw/internal/utils/output"
 	"github.com/aldoborrero/ethw/internal/wallet"
 	"github.com/alecthomas/kong"
 	"github.com/charmbracelet/log"
@@ -32,6 +34,22 @@ func (cmd *keystoreCreateCmd) Run() error {
 			log.Error(err.Error())
 			return err
 		}
+	}
+
+	var writer output.KeystoreOutputWriter
+	switch Cli.OutputFormat {
+	case "json":
+		writer = output.KeystoreJSONOutputWriter{}
+	case "csv":
+		writer = output.KeystoreCSVOutputWriter{}
+	case "table":
+		writer = output.KeystoreTableOutputWriter{}
+	default:
+		writer = output.KeystoreTextOutputWriter{}
+	}
+
+	if err := writer.WriteCreateOutput(*ks); err != nil {
+		return fmt.Errorf("failed to generate output: %w", err)
 	}
 
 	return nil

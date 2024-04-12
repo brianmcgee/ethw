@@ -20,7 +20,8 @@ var Cli struct {
 		Create seedCreateCmd `cmd:"" help:"Create a new seed"`
 	} `cmd:"" help:"Manage cryptographic seeds for Ethereum wallets"`
 
-	Log logOptions `embed:"" prefix:"log-"`
+	OutputFormat string     `name:"output" short:"o" enum:"json,csv,text,table" help:"Set the output format" default:"text"`
+	Log          logOptions `embed:"" prefix:"log-"`
 }
 
 type logOptions struct {
