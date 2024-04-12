@@ -44,7 +44,7 @@ Below you can see some examples for generating Ethereum wallets with the `wallet
 Ensure to specify the `seed` parameter:
 
 ```console
-$ ethw wallet create "seed=crouch apology feel panda curtain remind text dignity knee empty sibling radar"
+$ ethw wallet create --output=table "seed=crouch apology feel panda curtain remind text dignity knee empty sibling radar"
 ```
 
 You should expect output resembling:
@@ -62,7 +62,7 @@ You should expect output resembling:
 Generate multiple wallets at once and assign aliases for better readability:
 
 ```console
-$ ethw wallet create "seed=crouch apology feel panda curtain remind text dignity knee empty sibling radar;alias=Hermione Granger" "seed=radar sibling empty knee dignity text remind curtain panda feel apology crouch;alias=Harry Potter"
+$ ethw wallet create --output=table "seed=crouch apology feel panda curtain remind text dignity knee empty sibling radar;alias=Hermione Granger" "seed=radar sibling empty knee dignity text remind curtain panda feel apology crouch;alias=Harry Potter"
 ```
 
 The output table will display the aliases:
@@ -76,12 +76,12 @@ The output table will display the aliases:
 +---+------------------+--------------------------------------------+------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------+
 ```
 
-#### Generate Wallets with JSON format:
+#### Generate Wallets with different output formats:
 
-You can also generate wallets and output them in `JSON` format, useful for utilities like `jq` and `dasel`:
+You can also generate wallets and output them in `JSON` and `CSV` format, useful for utilities like `jq` and `dasel`:
 
 ```console
-$ ethw wallet create --json "seed=crouch apology feel panda curtain remind text dignity knee empty sibling radar"
+$ ethw wallet create --output=json "seed=crouch apology feel panda curtain remind text dignity knee empty sibling radar"
 ```
 
 The output will be like it follows:
