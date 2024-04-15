@@ -22,6 +22,7 @@ var Cli struct {
 
 	OutputFormat string     `name:"output" short:"o" enum:"json,csv,text,table" help:"Set the output format" default:"text"`
 	Log          logOptions `embed:"" prefix:"log-"`
+	Version versionCmd `cmd:"" help:"Display ethw version"`
 }
 
 type logOptions struct {
