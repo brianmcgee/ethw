@@ -6,8 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 
+	"github.com/charmbracelet/log"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -18,7 +21,7 @@ type Wallet struct {
 	PublicKey  string `json:"public_key"`
 }
 
-// NewWallet creates a new WalletInfo from the given seed and alias.
+// NewWallet creates a new Wallet from the given seed and alias.
 func NewWallet(seed []byte, alias string) (*Wallet, error) {
 	buf, err := generateHash(seed)
 	if err != nil {
@@ -63,29 +66,39 @@ func extractPublicKey(privateKey *ecdsa.PrivateKey) (*ecdsa.PublicKey, error) {
 }
 
 // Define the regex pattern globally, so it is compiled only once.
-var reWalletData = regexp.MustCompile(`(?:seed=([^;]+))?(?:;password=([^;]*))?`)
+var reWalletData = regexp.MustCompile(`(?:seed=([^;]*))(?:;password=([^;]*))?`)
 
 var ErrInvalidWalletDataFormat = errors.New("invalid wallet format")
 
+var ErrInvalidWalletDataMnemonicSeed = errors.New("invalid mnemonic format")
+
 // WalletData struct
 type WalletData struct {
-	Seed     string
+	Seed     []byte
 	Password string
 }
 
 // Decode implements the MapperValue interface
 func (wd *WalletData) UnmarshalText(text []byte) error {
-	// Using pre-compiled regex for parsing
 	matches := reWalletData.FindStringSubmatch(string(text))
 
 	// Check for invalid format or missing seed
 	if matches == nil || matches[1] == "" {
+		log.Debugf("No match found for the current seed")
 		return ErrInvalidWalletDataFormat
 	}
 
+	rawSeed := strings.TrimSpace(matches[1])
+	log.Debugf("Raw seed: %s", rawSeed)
+
+	if !bip39.IsMnemonicValid(rawSeed) {
+		log.Debugf("Invalid mnemonic passed")
+		return ErrInvalidWalletDataMnemonicSeed
+	}
+
 	// Assign seed and password
-	wd.Seed = matches[1]
-	wd.Password = matches[2]
+	wd.Seed = bip39.NewSeed(rawSeed, "")
+	wd.Password = strings.TrimSpace(matches[2])
 
 	return nil
 }

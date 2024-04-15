@@ -1,4 +1,4 @@
-package wallet
+package seed
 
 import (
 	"testing"
@@ -16,7 +16,7 @@ func TestUnmarshalText_ValidSeedAndAlias(t *testing.T) {
 	err := sd.UnmarshalText(seedBytes)
 
 	assert.Nil(t, err)
-	assert.Equal(t, bip39.NewSeed(seed, ""), sd.Data)
+	assert.Equal(t, bip39.NewSeed(seed, ""), sd.Seed)
 	assert.Equal(t, alias, sd.Alias)
 }
 
@@ -28,7 +28,7 @@ func TestUnmarshalText_ValidSeedNoAlias(t *testing.T) {
 	err := sd.UnmarshalText(seedBytes)
 
 	assert.Nil(t, err)
-	assert.Equal(t, bip39.NewSeed(seed, ""), sd.Data)
+	assert.Equal(t, bip39.NewSeed(seed, ""), sd.Seed)
 	assert.Empty(t, sd.Alias)
 }
 
@@ -49,7 +49,7 @@ func TestUnmarshalText_EmptyAlias(t *testing.T) {
 	err := sd.UnmarshalText(seedBytes)
 
 	assert.Nil(t, err)
-	assert.Equal(t, bip39.NewSeed(seed, ""), sd.Data)
+	assert.Equal(t, bip39.NewSeed(seed, ""), sd.Seed)
 	assert.Empty(t, sd.Alias)
 }
 
