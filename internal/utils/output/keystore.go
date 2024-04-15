@@ -23,7 +23,7 @@ type KeystoreTextOutputWriter struct{}
 func (w KeystoreTextOutputWriter) WriteCreateOutput(ks keystore.KeystoreWrapper) error {
 	fmt.Println("Account Creation Details:")
 	for _, account := range ks.Accounts() {
-		fmt.Printf("Address: %s\nKeystore Path: %s\n\n", account.Address.Hex(), account.URL.Path)
+		fmt.Printf("  Address: %s\nKeystore Path: %s\n\n", account.Address.Hex(), account.URL.Path)
 	}
 	return nil
 }
@@ -36,7 +36,7 @@ func (w KeystoreTextOutputWriter) WriteListOutput(accounts []accounts.Account) e
 
 	fmt.Println("List of Wallets:")
 	for i, account := range accounts {
-		fmt.Printf("Wallet %d: %s\n", i+1, account.Address.Hex())
+		fmt.Printf("  Wallet %d: %s\n", i+1, account.Address.Hex())
 	}
 
 	return nil

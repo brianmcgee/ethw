@@ -23,11 +23,11 @@ func (s SeedTextOutputWriter) WriteOutput(mnemonics []string, seeds [][]byte) er
 		return nil
 	}
 
-	fmt.Println("Mnemonic and Seed Information:")
+	fmt.Println("Seed Information:")
 	for i, mnemonic := range mnemonics {
-		fmt.Printf("Entry #%d\n", i+1)
-		fmt.Printf("Mnemonic: %s\n", mnemonic)
-		fmt.Printf("Seed: %x\n\n", seeds[i])
+		fmt.Printf("  Entry #%d\n", i+1)
+		fmt.Printf("  Seed: %x\n\n", seeds[i])
+		fmt.Printf("  Mnemonic: %s\n", mnemonic)
 	}
 
 	return nil

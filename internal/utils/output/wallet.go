@@ -20,17 +20,17 @@ type WalletTextOuputWriter struct{}
 // WriteCreateOutput writes the details of the wallets in a clear, readable, text format.
 func (w WalletTextOuputWriter) WriteCreateOutput(wallets []*wallet.Wallet) error {
 	if len(wallets) == 0 {
-		fmt.Println("No wallets found")
+		fmt.Println("No wallets created")
 		return nil
 	}
 
-	fmt.Println("Wallet Information:")
+	fmt.Println("Wallets Information:")
 	for i, walletInfo := range wallets {
-		fmt.Printf("Entry #%d:\n", i+1)
-		fmt.Printf("Alias: %s\n", walletInfo.Alias)
-		fmt.Printf("Address: %s\n", walletInfo.Address)
-		fmt.Printf("Private Key: %s\n", walletInfo.PrivateKey)
-		fmt.Printf("Public Key: %s\n\n", walletInfo.PublicKey)
+		fmt.Printf("  Wallet #%d:\n", i+1)
+		fmt.Printf("    Alias: %s\n", walletInfo.Alias)
+		fmt.Printf("    Address: %s\n", walletInfo.Address)
+		fmt.Printf("    Private Key: %s\n", walletInfo.PrivateKey)
+		fmt.Printf("    Public Key: %s\n\n", walletInfo.PublicKey)
 	}
 
 	return nil
