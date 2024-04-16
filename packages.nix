@@ -8,7 +8,7 @@
     packages = rec {
       ethw = pkgs.buildGoModule rec {
         pname = "ethw";
-        version = "0.3.1";
+        version = "0.3.2";
 
         src = lib.cleanSource ./.;
 
