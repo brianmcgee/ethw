@@ -8,11 +8,11 @@
     packages = rec {
       ethw = pkgs.buildGoModule rec {
         pname = "ethw";
-        version = "0.3.2";
+        version = "0.3.3";
 
         src = lib.cleanSource ./.;
 
-        vendorHash = "sha256-7+f5cAPjl/t+GfXJMLLNXmOF/uqO9NdwHkx3ktaUTg8=";
+        vendorHash = "sha256-alInrs+PwGMyllOhKKCAkTcLvJ+ucstA0+lS76z4h8c=";
 
         ldflags = [
           "-s"
