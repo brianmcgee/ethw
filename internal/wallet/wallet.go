@@ -21,8 +21,8 @@ func NewWallet(mnemonic, alias string, customDerivationPath ...string) (*Wallet,
 		return nil, fmt.Errorf("failed to create wallet from mnemonic: %w", err)
 	}
 
-	// Use the default root derivation path unless a custom path is provided
-	derivationPath := hdwallet.DefaultRootDerivationPath.String()
+	// Use the default base derivation path unless a custom path is provided
+	derivationPath := hdwallet.DefaultBaseDerivationPath.String()
 	if len(customDerivationPath) > 0 && customDerivationPath[0] != "" {
 		derivationPath = customDerivationPath[0]
 	}
